@@ -3,7 +3,7 @@ import numpy
 import sys
 import time
 import random
-
+from collections import Counter
 
 mObj = []
 map = [(x, y) for x in range(0,20) for y in range(0,20)] 
@@ -52,71 +52,87 @@ def main():
         cellGen()
 
     #Cria a matriz booleana com os valores das células
-
-    listM = matrixGen(mObj)
-
-    m = []
-
-    while listM != []:
-        m.append(listM[:20])
-        listM = listM[20:]
-    array = numpy.array(m)
-    array_transposto = array.transpose()
-    print(array_transposto)
-
-    #Localiza os pontos com 1
-    array_tp_lista = array_transposto.tolist()
-    positive_cell = numpy.where((array_transposto > 0))
-    posl = positive_cell[0].tolist()
-    valCel = []
-
-    for i in range(0, len(posl)):
-        val = (positive_cell[0][i], positive_cell[1][i])
-        valCel.append(val)
-
-    #valCel[célula][x ou y]
-    adj_matrix = []
-    #indices adjacentes
-    for valo in range(0, len(valCel)):
-        adj = []
-        if valCel[valo][0] > 0:
-            adj.append((valCel[valo][0] - 1, valCel[valo][1]))
-
-        if valCel[valo][0] > 0 and valCel[valo][1] > 0:
-            adj.append((valCel[valo][0] - 1, valCel[valo][1] - 1))
-
-        if valCel[valo][0] + 1 < len(array_tp_lista[0]):
-            adj.append((valCel[valo][0] + 1, valCel[valo][1]))
-        
-        if valCel[valo][0] + 1 < len(array_tp_lista[0]) and valCel[valo][1] > 0:
-            adj.append((valCel[valo][0] + 1, valCel[valo][1] - 1))
-        
-        if valCel[valo][1] > 0:
-            adj.append((valCel[valo][0], valCel[valo][1] - 1))
-
-        if valCel[valo][0] + 1 < len(array_tp_lista[0]) and valCel[valo][1] + 1 < len(array_tp_lista[0]):
-            adj.append((valCel[valo][0] + 1, valCel[valo][1] + 1))
-
-        if valCel[valo][1] + 1 < len(array_tp_lista):
-            adj.append((valCel[valo][0], valCel[valo][1] + 1))
-
-        if valCel[valo][0] > 0 and valCel[valo][1] > 0:
-            adj.append((valCel[valo][0] - 1, valCel[valo][1] - 1))
-
-        adj_matrix.append(adj)
-        print("Para", valCel[valo], ":")
-        print(adj)
-        
-    print(adj_matrix)
-
-
-
     #Update do display do pygame
     pygame.display.update()
+    #O jogo em si
     while True:
         events = pygame.event.get()
+        listM = matrixGen(mObj)
+
+        m = []
+
+        while listM != []:
+            m.append(listM[:20])
+            listM = listM[20:]
+        array = numpy.array(m)
+        array_transposto = array.transpose()
+        print(array_transposto)
+
+        #Localiza os pontos com 1
+        array_tp_lista = array_transposto.tolist()
+        positive_cell = numpy.where((array_transposto > 0))
+        posl = positive_cell[0].tolist()
+        valCel = []
+
+        for i in range(0, len(posl)):
+            val = (positive_cell[0][i], positive_cell[1][i])
+            valCel.append(val)
+
+        #valCel[célula][x ou y]
+        adj_matrix = []
+        #indices adjacentes
+        for valo in range(0, len(valCel)):
+            adj = []
+            if valCel[valo][0] > 0:
+                adj.append((valCel[valo][0] - 1, valCel[valo][1]))
+
+            if valCel[valo][0] > 0 and valCel[valo][1] > 0:
+                adj.append((valCel[valo][0] - 1, valCel[valo][1] - 1))
+
+            if valCel[valo][0] + 1 < len(array_tp_lista[0]):
+                adj.append((valCel[valo][0] + 1, valCel[valo][1]))
+            
+            if valCel[valo][0] + 1 < len(array_tp_lista[0]) and valCel[valo][1] > 0:
+                adj.append((valCel[valo][0] + 1, valCel[valo][1] - 1))
+            
+            if valCel[valo][1] > 0:
+                adj.append((valCel[valo][0], valCel[valo][1] - 1))
+
+            if valCel[valo][0] + 1 < len(array_tp_lista[0]) and valCel[valo][1] + 1 < len(array_tp_lista[0]):
+                adj.append((valCel[valo][0] + 1, valCel[valo][1] + 1))
+
+            if valCel[valo][1] + 1 < len(array_tp_lista):
+                adj.append((valCel[valo][0], valCel[valo][1] + 1))
+
+            if valCel[valo][0] > 0 and valCel[valo][1] + 1 < len(array_tp_lista):
+                adj.append((valCel[valo][0] - 1, valCel[valo][1] + 1))
+
+            adj_matrix.append(adj)
+          #  print("Para", valCel[valo], ":")
+        #    print(adj)
+
+        #VALCEL = TODOS OS QUADRADOS PINTADOS
+        #ADJ_MATRIX = TODAS AS POSIÇÕES ADJACENTES AOS QUADRADOS PINTADOS
+        #Quantas adjacências se interseccionam?
+        lst = []
+        for i in range(0, len(adj_matrix)):
+            for j in adj_matrix[i]:
+                lst.append(j)
+        c = Counter(lst)
+        #print(c)       
+
+        newDict = dict()
+        
+        #Todas as adjacencias
+        for (key, value) in c.items():
+            if value >= 2:
+                newDict[key] = value
+        print(newDict)
+
+                    
+                    
         #Framerate
-        time.sleep(1/60)
+        time.sleep(3/1)
 
         pygame.display.update()
 
