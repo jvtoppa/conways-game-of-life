@@ -3,7 +3,7 @@
 Conway's Game of Life made with pygame.
 ~~Still a WIP.~~
 
-Libraries utilized:
+Libraries used:
 pygame
 numpy
 
